@@ -1,4 +1,6 @@
 use simulation_project::simulation::*;
+use simulation_project::types::*;
+use image::{ImageBuffer, Rgba};
 
 fn main() {
     let window_size = [800.0, 600.0];
@@ -9,28 +11,32 @@ fn main() {
             .build()
             .unwrap();
 
-    let mut simulation = Simulation::new(100, 5.0);
-    simulation.set_positions(window_size);
+    let mut particles = ParticleData {
+        positions: vec![[0.0, 0.0]; 100],
+        velocities: vec![[2.0, 3.0]; 100],
+    };
+    set_positions(&mut particles.positions, window_size);
     
     while let Some(event) = window.next() {
-        simulation.apply_gravity([0.0, 0.098]);
-        simulation.resolve_collisions(window_size);
-        simulation.apply_friction();
-        simulation.update_positions();
+        //apply_gravity();
+        resolve_collisions(&mut particles, window_size);
+        apply_friction(&mut particles.velocities);
+        update_positions(&mut particles);
         window.draw_2d(&event, |c, g, _device| {
             piston_window::clear([0.1, 0.1, 0.3, 1.0], g);
-            render_particles(&simulation, c, g);
+            render_particles(&particles, 5.0, c, g);
         });
     }
 }
 
 fn render_particles<G: piston_window::Graphics>(
-    simulation: &Simulation,
+    particle_data: &ParticleData,
+    particle_size: f64,
     c: piston_window::Context,
     g: &mut G,
 ) {
-    let size = simulation.particle_size;
-    for position in &simulation.particle_data.positions {
+    let size = particle_size;
+    for position in &particle_data.positions {
         let x = position[0];
         let y = position[1];
 
