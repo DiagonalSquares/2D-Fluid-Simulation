@@ -2430,6 +2430,8 @@ dependencies = [
  "piston2d-opengl_graphics",
  "piston_window",
  "pistoncore-glutin_window 0.72.0",
+ "rand",
+ "rayon",
  "wasm-bindgen",
 ]
 

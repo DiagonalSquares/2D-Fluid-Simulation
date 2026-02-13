@@ -1,7 +1,17 @@
-use simulation_project::simulation::*;
-use simulation_project::types::*;
+use piston_window::{Texture, TextureSettings};
+use image::{ImageBuffer, Rgba};
 
-const PARTICLE_COUNT: usize = 100;
+mod types;
+mod testing;
+mod simulation;
+
+use crate::types::*;
+use crate::testing::*;
+use crate::simulation::*;
+
+const PARTICLE_COUNT: usize = 10;
+const RANDOM_INDEX: usize = PARTICLE_COUNT / 2;
+const DENSITY_RADIUS: f64 = 100.0;
 
 fn main() {
     let window_size = [800.0, 600.0];
@@ -11,36 +21,40 @@ fn main() {
             .exit_on_esc(true)
             .build()
             .unwrap();
-
+    
     let mut particles = ParticleData {
+        mass: 1.0,
         positions: vec![[0.0, 0.0]; PARTICLE_COUNT],
         velocities: vec![[0.0, 0.0]; PARTICLE_COUNT],
+        densities: vec![0.0; PARTICLE_COUNT],
     };
-    set_positions(&mut particles.positions, window_size);
+    //println!("test1");
+    set_positions(&mut particles.positions, window_size, true);
+    //precalculate_densities(&mut particles, DENSITY_RADIUS);
+    //calculate_density(&particles, RANDOM_INDEX, DENSITY_RADIUS);
+    //println!("test2");
 
-    let index = PARTICLE_COUNT / 2 + 10;
-    let radius = 100.0;
-    let density = calculate_density(&particles, index, radius);
-    println!("Density of particle {}: {}", index, density);
+    let mut buffer: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(window_size[0] as u32, window_size[1] as u32);
+    //draw_approximation(&mut buffer, &particles, DENSITY_RADIUS);
+    //draw_function(&mut buffer);
+    
+    let mut texture_context = window.create_texture_context();
+    let texture = Texture::from_image(
+        &mut texture_context,
+        &buffer,
+        &TextureSettings::new(),
+    ).unwrap();
     
     while let Some(event) = window.next() {
-        //apply_gravity(&mut particles.velocities);
-        resolve_collisions(&mut particles, window_size);
-        apply_friction(&mut particles.velocities);
-        update_positions(&mut particles);
+        simulation_step(&mut particles, DENSITY_RADIUS, window_size);
+        println!("particle positions: {:?}", particles.positions);
 
         window.draw_2d(&event, |c, g, _device| {
             piston_window::clear([0.1, 0.1, 0.3, 1.0], g);
+            //piston_window::image(&texture, c.transform, g);
             render_particles(&particles, 5.0, c, g);
-            // Draw circle border (outline only) by drawing multiple small circles in a ring
-            draw_circle_border(
-                particles.positions[index],
-                radius,
-                2.0,
-                [0.0, 0.0, 1.0, 1.0],
-                c,
-                g,
-            );
+            //render_particles_from_function(&particles, 5.0, c, g);
+            //visualize_density(particles.positions[RANDOM_INDEX], c, g);
         });
     }
 }
@@ -61,27 +75,3 @@ fn render_particles<G: piston_window::Graphics>(
     }
 }
 
-fn draw_circle_border<G: piston_window::Graphics>(
-    center: [f64; 2],
-    radius: f64,
-    width: f64,
-    color: [f32; 4],
-    c: piston_window::Context,
-    g: &mut G,
-) {
-    // Draw circle border by drawing line segments around the circumference
-    let segments = 64;
-    let angle_step = std::f64::consts::PI * 2.0 / segments as f64;
-    
-    for i in 0..segments {
-        let angle1 = i as f64 * angle_step;
-        let angle2 = ((i + 1) % segments) as f64 * angle_step;
-        
-        let x1 = center[0] + radius * angle1.cos();
-        let y1 = center[1] + radius * angle1.sin();
-        let x2 = center[0] + radius * angle2.cos();
-        let y2 = center[1] + radius * angle2.sin();
-        
-        piston_window::line(color, width, [x1, y1, x2, y2], c.transform, g);
-    }
-}
