@@ -9,12 +9,12 @@ use crate::types::*;
 use crate::testing::*;
 use crate::simulation::*;
 
-const PARTICLE_COUNT: usize = 10;
+const PARTICLE_COUNT: usize = 300;
 const RANDOM_INDEX: usize = PARTICLE_COUNT / 2;
 const DENSITY_RADIUS: f64 = 100.0;
 
 fn main() {
-    let window_size = [800.0, 600.0];
+    let window_size = [1200.0, 800.0];
 
     let mut window: piston_window::PistonWindow =
         piston_window::WindowSettings::new("Simulation", window_size)
@@ -25,11 +25,12 @@ fn main() {
     let mut particles = ParticleData {
         mass: 1.0,
         positions: vec![[0.0, 0.0]; PARTICLE_COUNT],
+        predicted_positions: vec![[0.0, 0.0]; PARTICLE_COUNT],
         velocities: vec![[0.0, 0.0]; PARTICLE_COUNT],
         densities: vec![0.0; PARTICLE_COUNT],
     };
     //println!("test1");
-    set_positions(&mut particles.positions, window_size, true);
+    set_positions(&mut particles.positions, window_size, false);
     //precalculate_densities(&mut particles, DENSITY_RADIUS);
     //calculate_density(&particles, RANDOM_INDEX, DENSITY_RADIUS);
     //println!("test2");
@@ -47,7 +48,6 @@ fn main() {
     
     while let Some(event) = window.next() {
         simulation_step(&mut particles, DENSITY_RADIUS, window_size);
-        println!("particle positions: {:?}", particles.positions);
 
         window.draw_2d(&event, |c, g, _device| {
             piston_window::clear([0.1, 0.1, 0.3, 1.0], g);
