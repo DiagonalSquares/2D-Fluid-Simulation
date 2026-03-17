@@ -1,7 +1,7 @@
 //this file has a bunch of function and whatnot for testing purposes
 use std::time::Instant;
 use crate::types::*;
-use crate::simulation::*;
+use crate::sph::*;
 use image::{ImageBuffer, Rgba};
 
 #[allow(dead_code)]
@@ -33,16 +33,16 @@ pub fn draw_circle_border<G: piston_window::Graphics>(
     // Draw circle border by drawing line segments around the circumference
     let segments = 64;
     let angle_step = std::f64::consts::PI * 2.0 / segments as f64;
-    
+
     for i in 0..segments {
         let angle1 = i as f64 * angle_step;
         let angle2 = ((i + 1) % segments) as f64 * angle_step;
-        
+
         let x1 = center[0] + radius * angle1.cos();
         let y1 = center[1] + radius * angle1.sin();
         let x2 = center[0] + radius * angle2.cos();
         let y2 = center[1] + radius * angle2.sin();
-        
+
         piston_window::line(color, width, [x1, y1, x2, y2], c.transform, g);
     }
 }
@@ -86,11 +86,6 @@ pub fn draw_approximation(buffer: &mut ImageBuffer<Rgba<u8>, Vec<u8>>, particle_
 
     let duration = start.elapsed();
     println!("Approximation drawn in: {:?} ms", duration.as_millis());
-}
-
-#[allow(dead_code)]
-pub fn example_function(x: f64, y: f64) -> f64 {
-    return (((y / 50.0) + (x / 50.0).sin()).cos() + 1.0) / 2.0;
 }
 
 #[allow(dead_code)]

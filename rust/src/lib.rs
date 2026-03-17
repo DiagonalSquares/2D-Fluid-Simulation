@@ -1,13 +1,19 @@
 use wasm_bindgen::prelude::*;
 
-pub mod simulation;
 pub mod types;
+pub mod sph;
+pub mod physics;
+pub mod simulation;
 pub mod api;
-pub mod testing;
 
-pub use crate::simulation::*;
+#[cfg(feature = "native")]
+pub mod visualization;
+
 pub use crate::types::*;
+pub use crate::sph::*;
+pub use crate::physics::*;
+pub use crate::simulation::*;
 pub use api::*;
-pub use crate::testing::*;
 
-
+#[cfg(feature = "native")]
+pub use crate::visualization::*;
