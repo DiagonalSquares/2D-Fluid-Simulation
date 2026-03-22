@@ -24,5 +24,9 @@ A 2D particle-based fluid simulation using SPH (Smoothed Particle Hydrodynamics)
 - `PARTICLE_COUNT`: 300, `DENSITY_RADIUS`: 100.0 (in `main.rs`)
 - `FRICTION`: 0.99, `GRAVITY`: [0.0, 0.098], `TARGET_DENSITY`: 2.0, `PRESSURE_MULTIPLIER`: 0.5 (in `physics.rs`)
 
+## Spatial Optimization
+- `optimization.rs` implements spatial grid hashing: `create_grid`, `create_cell_key`, `sort_keys`
+- Next step: integrate grid into `sph.rs` to replace O(n²) neighbor loops with cell-based lookups
+
 ## Active Branch Work
-- `ai-grid-attempt` branch has work-in-progress grid-based spatial optimization (not on main yet)
+- `ai-grid-attempt` branch has older work-in-progress grid-based spatial optimization

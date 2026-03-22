@@ -20,6 +20,7 @@ simulation_project/
 │       ├── sph.rs          # SPH kernels: smoothing_kernel, smoothing_kernel_derivative, density calculation
 │       ├── physics.rs      # Physics: gravity, friction, pressure forces, collision resolution, position updates
 │       ├── visualization.rs # Debug/visualization helpers (native-only, behind "native" feature)
+│       ├── optimization.rs  # Spatial grid hashing for neighbor lookups (Grid struct, create_grid, create_cell_key, sort_keys)
 │       └── api.rs          # WASM API bindings (declared in lib.rs)
 └── web/
     ├── package.json
